@@ -1,4 +1,4 @@
-# vue-lazyload-images
+# React-Drag-List
 [![npm](https://img.shields.io/badge/npm-v1.0.0-green.svg)](https://www.npmjs.com/package/vue-lazy-images)
 [![Build Status](https://travis-ci.org/yyh1102/vue-lazyload-images.svg?branch=master)](https://travis-ci.org/yyh1102/vue-lazyload-images)
 [![Coverage Status](https://coveralls.io/repos/github/yyh1102/vue-lazyload-images/badge.svg)](https://coveralls.io/github/yyh1102/vue-lazyload-images)
