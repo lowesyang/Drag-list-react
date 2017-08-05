@@ -1,0 +1,56 @@
+{
+  "name": "react-drag-list",
+  "version": "1.0.0",
+  "description": "A component of dragging and resorting list for React",
+  "main": "src/DragList.js",
+  "scripts": {
+    "karma": "karma start config/karma.conf.js",
+    "test": "karma start config/karma.conf.js --single-run",
+    "start": "webpack-dev-server --hot --inline --port 8080 --config config/webpack.dev.config.js",
+    "build": "webpack --config config/webpack.prod.config.js",
+    "coverage": "cat ./coverage/lcov.info | coveralls"
+  },
+  "keywords": [
+    "drag list",
+    "list resort",
+    "React"
+  ],
+  "author": "LowesYang",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
+    "babel-plugin-istanbul": "^4.1.3",
+    "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-es2015": "^6.24.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "chai": "^3.5.0",
+    "coveralls": "^2.13.1",
+    "css-loader": "^0.28.0",
+    "file-loader": "^0.11.1",
+    "karma": "^1.7.0",
+    "karma-babel-preprocessor": "^6.0.1",
+    "karma-chai": "^0.1.0",
+    "karma-coverage": "^1.1.1",
+    "karma-coveralls": "^1.1.2",
+    "karma-mocha": "^1.3.0",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "karma-requirejs": "^1.1.0",
+    "karma-webpack": "^2.0.3",
+    "mocha": "^3.4.1",
+    "path": "^0.12.7",
+    "phantomjs-prebuilt": "^2.1.14",
+    "requirejs": "^2.3.3",
+    "style-loader": "^0.16.1",
+    "webpack": "^2.3.2",
+    "webpack-dev-server": "^2.4.2",
+    "webpack-merge": "^4.1.0"
+  },
+  "dependencies": {
+    "prop-types": "^15.5.10",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1"
+  }
+}

@@ -1,0 +1,21 @@
+:global(.lowes-drag-list) {
+  position: relative;
+}
+
+:global(.lowes-drag-item) {
+  position: absolute;
+  width:100%;
+  z-index:2000;
+  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  -webkit-transform: translateX(20px);
+  -moz-transform: translateX(20px);
+  -ms-transform: translateX(20px);
+  -o-transform: translateX(20px);
+  transform: translateX(20px);
+}
+
+.placeholder{
+
+}
