@@ -1,9 +1,11 @@
 # Drag-list-react
-[![npm](https://img.shields.io/badge/npm-v1.0.0-green.svg)](https://www.npmjs.com/package/drag-list-react)
+[![npm](https://img.shields.io/badge/npm-v1.0.3-green.svg)](https://www.npmjs.com/package/drag-list-react)
 [![Build Status](https://travis-ci.org/yyh1102/Drag-list-react.svg?branch=master)](https://travis-ci.org/yyh1102/Drag-list-react)
 [![npm](https://img.shields.io/npm/l/express.svg)](https://opensource.org/licenses/mit-license.php)
 
 A HOC component of Drag&Drop,Touch enabled and Reordering list for React.
+
+[demo](http://htmlpreview.github.io/?https://github.com/yyh1102/Drag-list-react/blob/master/demo/index.html)
 
 ## Install
 ```bash
