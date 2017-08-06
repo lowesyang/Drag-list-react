@@ -5,16 +5,14 @@
  * @return {*|Node}
  */
 export function getListContainer(el, className) {
-  let parent = el.parentNode;
-  while (parent) {
-    console.log(parent)
-    if (parent.className && parent.className.indexOf(className) >= 0) {
+  el=el.parentNode;
+  while (el) {
+    if (el.className && el.className.indexOf(className) >= 0) {
       break;
     }
-    parent = parent.parentNode;
+    el = el.parentNode;
   }
-  if(!parent) throw new Error(`The element with className \'${className}\' is not found`);
-  return parent;
+  return el;
 }
 
 /**
@@ -28,24 +26,18 @@ export function getListContainer(el, className) {
  * }
  */
 export function getElement(el, container, className) {
-  let realEl = el;
-  while (realEl) {
-    if (realEl.className && realEl.className.indexOf(className) >= 0) {
+  el = el.parentNode;
+  while (el) {
+    if (el.className && el.className.indexOf(className) >= 0) {
       break;
     }
-    realEl = realEl.parentNode;
+    el = el.parentNode;
   }
-  if(!realEl) throw new Error(`The element with className \'${className}\' is not found`);
-  // const ind = Array.prototype.indexOf.call(container, realEl);
-  let ind=0;
-  const children=realEl.parentNode.childNodes;
-  while(ind<children.length){
-    if(realEl === children[ind]) break;
-    ind++;
-  }
+  if(!el) return null;
+  const ind = Array.prototype.indexOf.call(container.childNodes, el);
   return {
-    el:realEl,
-    ind:ind<children.length?ind:-1
+    el,
+    ind
   }
 }
 
@@ -55,4 +47,8 @@ export function getElement(el, container, className) {
  */
 export function disabledSelection() {
   window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
+}
+
+export function isInline(type){
+  return type === 'inline';
 }

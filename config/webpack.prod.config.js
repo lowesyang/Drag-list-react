@@ -5,10 +5,9 @@ var merge = require("webpack-merge");
 
 module.exports = merge.smart({}, webpackDevConfig, {
   entry: {
-    VueLazyImages: './src/index'
+    'drag-list-react': './src/DragList'
   },
-  plugins: [
-    new webpack.optimize.UglifyJsPlugin({
+  plugins: [    new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false,
         drop_console: false

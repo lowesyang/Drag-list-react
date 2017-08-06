@@ -1,8 +1,9 @@
 {
-  "name": "react-drag-list",
-  "version": "1.0.0",
+  "name": "drag-list-react",
+  "version": "1.0.2",
   "description": "A component of dragging and resorting list for React",
-  "main": "src/DragList.js",
+  "main": "dist/drag-list-react.js",
+  "browser": "dist/drag-list-react.js",
   "scripts": {
     "karma": "karma start config/karma.conf.js",
     "test": "karma start config/karma.conf.js --single-run",
