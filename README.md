@@ -16,7 +16,9 @@ npm install drag-list-react --save
 ```javascript
 import React from 'react';
 import DragList from 'drag-list-react';
-// Data list
+
+// Notice: Every item in your data list must contains property 'id'.
+// DragList component uses 'id' as the key of array.
 const list=[
   {
     id:1,
