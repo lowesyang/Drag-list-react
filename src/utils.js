@@ -5,7 +5,7 @@
  * @return {*|Node}
  */
 export function getListContainer(el, className) {
-  el=el.parentNode;
+  el = el.parentNode;
   while (el) {
     if (el.className && el.className.indexOf(className) >= 0) {
       break;
@@ -33,7 +33,7 @@ export function getElement(el, container, className) {
     }
     el = el.parentNode;
   }
-  if(!el) return null;
+  if (!el) return null;
   const ind = Array.prototype.indexOf.call(container.childNodes, el);
   return {
     el,
@@ -49,6 +49,15 @@ export function disabledSelection() {
   window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
 }
 
-export function isInline(type){
+export function isInline(type) {
   return type === 'inline';
+}
+
+export function checkMobile() {
+  const agents = ['Android', 'iPhone', 'SymbianOS', 'Windows Phone', 'iPad', 'iPod'];
+  const userAgentInfo = navigator.userAgent;
+  for (let i = 0; i < agents.length; i++) {
+    if (userAgentInfo.indexOf(agents[i]) > 0) return true;
+  }
+  return false;
 }

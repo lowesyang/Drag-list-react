@@ -1,25 +1,27 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {getListContainer, getElement, disabledSelection, isInline} from './utils';
+import {getListContainer, getElement, disabledSelection, isInline, checkMobile} from './utils';
 import {DRAG_CONTAINER, FLOAT_DRAG_ITEM, ITEM_CAN_DRAG} from './constants';
 import styles from './DragList.css';
 
 const DragList = (DragItem, Placeholder) => class extends Component {
-  static PropTypes={
-    list:PropTypes.array.isRequired,
-    type:PropTypes.string,
-    isLongPress:PropTypes.bool,
-    delay:PropTypes.number,
-    gutter:PropTypes.number,
-    onDragBegin:PropTypes.func,
-    onDragEnd:PropTypes.func
+  static PropTypes = {
+    list: PropTypes.array.isRequired,
+    type: PropTypes.string,
+    isLongPress: PropTypes.bool,
+    delay: PropTypes.number,
+    gutter: PropTypes.number,
+    onDragBegin: PropTypes.func,
+    onDragEnd: PropTypes.func
   }
+
   constructor(props) {
     super(props);
     this.state = {
       list: props.list
     }
     this.isInline = isInline(this.props.type);    //inline,original
+    this.isMobile = checkMobile();      //check is mobile or not
     this.isDragBegin = false;
     this.isLongPress = false;
     this._container = null;         //real DOM container of list
@@ -62,8 +64,8 @@ const DragList = (DragItem, Placeholder) => class extends Component {
       window.removeEventListener('mousemove', this.dragging);
       window.removeEventListener('mouseup', this.dragEnd);
       window.removeEventListener('mouseleave', this.dragEnd);
-      window.removeEventListener('ontouchmove', this.dragging);
-      window.removeEventListener('ontouchend', this.dragEnd);
+      window.removeEventListener('touchmove', this.dragging);
+      window.removeEventListener('touchend', this.dragEnd);
     }
     else {
       window.detachEvent('onmousemove', this.dragging);
@@ -79,8 +81,10 @@ const DragList = (DragItem, Placeholder) => class extends Component {
   }
 
   longPress = (e) => {
-    if (e.button !== 0) return;
-    this.mousePos = this.isInline ? e.pageX : e.pageY;
+    if (e.button !== 0 || this.props.disabled) return;
+    this.mousePos = this.isInline ?
+      (e.touches ? e.touches[0].clientX : e.pageX)
+      : (e.touches ? e.touches[0].clientY : e.pageY);
     const el = e.target;
     if (this.props.isLongPress) {
       clearTimeout(this.setTime);
@@ -94,7 +98,10 @@ const DragList = (DragItem, Placeholder) => class extends Component {
 
   dragBegin = (el) => {
     if (!this.checkLongPress() || this.isDragBegin) return;
-    // console.log('dragBegin');
+    console.log('dragBegin');
+    if(this.isMobile) {
+      document.body.style.overflow = 'hidden';
+    }
     const listContainer = getListContainer(el, DRAG_CONTAINER);
     //如果经过父级遍历到的容器与真实的容器不一致，则需要将事件交由上一层组件处理
     if (this._container !== listContainer) return;
@@ -126,7 +133,7 @@ const DragList = (DragItem, Placeholder) => class extends Component {
     }, () => {
       //onDragBegin callback
       this.props.onDragBegin
-      && this.props.onDragBegin(this.currDragItem.item,this.currDragItem.ind,this.currDragItem.el);
+      && this.props.onDragBegin(this.currDragItem.item, this.currDragItem.ind, this.currDragItem.el);
     })
 
 
@@ -153,7 +160,10 @@ const DragList = (DragItem, Placeholder) => class extends Component {
     // console.log('dragging')
     disabledSelection();
     let {ind} = this.currDragItem;
-    const nextPos = this.isInline ? e.pageX : e.pageY, offsetDist = nextPos - this.mousePos;
+    const nextPos = this.isInline ?
+      (e.touches ? e.touches[0].clientX : e.pageX)
+      : (e.touches ? e.touches[0].clientY : e.pageY),
+      offsetDist = nextPos - this.mousePos;
     const mouseClient = this.isInline ? e.clientX : e.clientY;
 
     //float node follow the mouse
@@ -180,6 +190,10 @@ const DragList = (DragItem, Placeholder) => class extends Component {
   dragEnd = (e) => {
     e.stopPropagation();
     if (!this.checkLongPress() || e.button !== 0) return;
+    if(this.isMobile) {
+      document.body.style.overflow = null;
+    }
+    this.mousePos = this.beginPos = null;
     this.isLongPress = false;
     this.isDragBegin = false;
     if (this.currDragItem) {
@@ -203,7 +217,7 @@ const DragList = (DragItem, Placeholder) => class extends Component {
     const gutter = this.props.gutter;
     const itemStyle = {
       margin: `${gutter}px`,
-    }
+    };
     const List = this.state.list.map((item, key) => {
       if (item.type === 'placeholder') {
         const placeholderStyle = Object.assign({}, itemStyle, {
@@ -224,18 +238,32 @@ const DragList = (DragItem, Placeholder) => class extends Component {
           >
             <DragItem
               parentId={item.id}
-              {...this.props}
               {...item}
             />
           </div>
         )
       }
-    })
+    });
+
+    //get the props should be passed to real DOM
+    const props = {...this.props};
+    [
+      'disabled',
+      'gutter',
+      'isLongPress',
+      'delay',
+      'onDragBegin',
+      'onDragEnd',
+      'type',
+      'className'
+    ].forEach(key => delete props[key]);
+
     return (
       <div
         className={(this.props.className || '') + ' ' + DRAG_CONTAINER}
-        style={this.props.style}
+        {...props}
         onMouseDown={this.longPress}
+        onTouchStart={this.longPress}
         ref={el => this._container = el}
       >
         {List}
