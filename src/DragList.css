@@ -3,6 +3,7 @@
 }
 
 :global(.lowes-drag-item) {
+  margin:auto;
   position: absolute;
   cursor:move;
   z-index:2000;

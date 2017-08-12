@@ -37,6 +37,7 @@ const DragList = (DragItem, Placeholder) => class extends Component {
       window.addEventListener('mouseup', this.dragEnd);
       window.addEventListener('mouseleave', this.dragEnd);
       window.addEventListener('touchend', this.dragEnd);
+      window.addEventListener('touchcancel', this.dragEnd);
     }
     else {
       window.attachEvent('onmousemove', this.dragging);
@@ -44,6 +45,7 @@ const DragList = (DragItem, Placeholder) => class extends Component {
       window.attachEvent('onmouseup', this.dragEnd);
       window.attachEvent('onmouseleave', this.dragEnd);
       window.attachEvent('ontouchend', this.dragEnd);
+      window.attachEvent('ontouchcancel', this.dragEnd);
     }
     if (this.isInline)
       this._container.style.cssText += `
@@ -66,6 +68,7 @@ const DragList = (DragItem, Placeholder) => class extends Component {
       window.removeEventListener('mouseleave', this.dragEnd);
       window.removeEventListener('touchmove', this.dragging);
       window.removeEventListener('touchend', this.dragEnd);
+      window.removeEventListener('touchcancel', this.dragEnd);
     }
     else {
       window.detachEvent('onmousemove', this.dragging);
@@ -73,6 +76,7 @@ const DragList = (DragItem, Placeholder) => class extends Component {
       window.detachEvent('onmouseleave', this.dragEnd);
       window.detachEvent('ontouchmove', this.dragging);
       window.detachEvent('ontouchend', this.dragEnd);
+      window.detachEvent('ontouchcancel', this.dragEnd);
     }
   }
 
@@ -81,10 +85,11 @@ const DragList = (DragItem, Placeholder) => class extends Component {
   }
 
   longPress = (e) => {
-    if (e.button !== 0 || this.props.disabled) return;
+    e.stopPropagation();
+    if (!this.isMobile && e.button !== 0 || this.props.disabled) return;
     this.mousePos = this.isInline ?
-      (e.touches ? e.touches[0].clientX : e.pageX)
-      : (e.touches ? e.touches[0].clientY : e.pageY);
+      (e.touches ? e.touches[0].pageX : e.pageX)
+      : (e.touches ? e.touches[0].pageY : e.pageY);
     const el = e.target;
     if (this.props.isLongPress) {
       clearTimeout(this.setTime);
@@ -97,16 +102,19 @@ const DragList = (DragItem, Placeholder) => class extends Component {
   }
 
   dragBegin = (el) => {
+    console.log("dragBegin "+this.isDragBegin)
     if (!this.checkLongPress() || this.isDragBegin) return;
     console.log('dragBegin');
-    if(this.isMobile) {
-      document.body.style.overflow = 'hidden';
-    }
+
     const listContainer = getListContainer(el, DRAG_CONTAINER);
     //如果经过父级遍历到的容器与真实的容器不一致，则需要将事件交由上一层组件处理
     if (this._container !== listContainer) return;
     this.currDragItem = getElement(el, this._container, ITEM_CAN_DRAG);
     if (!this.currDragItem) return;
+
+    if (this.isMobile) {
+      document.body.style.overflow = 'hidden';
+    }
 
     this.isDragBegin = true;
     const list = this.state.list;
@@ -117,7 +125,9 @@ const DragList = (DragItem, Placeholder) => class extends Component {
     //Create float node
     const floatEl = dragEl.cloneNode(true);
     floatEl.className += ` ${FLOAT_DRAG_ITEM}`;
-    floatEl.style.width = dragEl.offsetWidth + 1 + 'px';
+    floatEl.style.width = dragEl.offsetWidth + 'px';
+    floatEl.style.height = dragEl.offsetHeight + 'px';
+    floatEl.removeEventListener('touchstart',this.longPress);
     if (this.isInline) floatEl.style.left = this.beginPos + 'px';
     else floatEl.style.top = this.beginPos + 'px';
     this._container.appendChild(floatEl);
@@ -151,20 +161,22 @@ const DragList = (DragItem, Placeholder) => class extends Component {
   }
 
   dragging = (e) => {
+    // debugger;
     e.stopPropagation();
     if (!this.checkLongPress()
-      || !this.isDragBegin
-      || e.button !== 0)
+      || !this.isDragBegin)
       return;
     //ban selection event
-    // console.log('dragging')
+    console.log('dragging')
     disabledSelection();
     let {ind} = this.currDragItem;
     const nextPos = this.isInline ?
-      (e.touches ? e.touches[0].clientX : e.pageX)
-      : (e.touches ? e.touches[0].clientY : e.pageY),
+      (e.touches ? e.touches[0].pageX : e.pageX)
+      : (e.touches ? e.touches[0].pageY : e.pageY),
       offsetDist = nextPos - this.mousePos;
-    const mouseClient = this.isInline ? e.clientX : e.clientY;
+    const mouseClient = this.isInline ?
+      (e.touches ? e.touches[0].clientX : e.clientX)
+      : (e.touches ? e.touches[0].clientY : e.clientY);
 
     //float node follow the mouse
     if (this.isInline) this.floatEl.style.left = this.beginPos + offsetDist + 'px';
@@ -176,7 +188,7 @@ const DragList = (DragItem, Placeholder) => class extends Component {
       const item = dragList[i];
       if (item.className && item.className.indexOf(FLOAT_DRAG_ITEM) >= 0) continue;
       const {itemOffset, itemSize} = this.getItemRectInfo(item);
-      if (mouseClient > itemOffset && mouseClient < itemOffset + itemSize) {
+      if (mouseClient > itemOffset && mouseClient < itemOffset + itemSize && ind !== i) {
         [list[ind], list[i]] = [list[i], list[ind]];
         ind = this.currDragItem.ind = i;
         this.setState({
@@ -189,8 +201,12 @@ const DragList = (DragItem, Placeholder) => class extends Component {
 
   dragEnd = (e) => {
     e.stopPropagation();
-    if (!this.checkLongPress() || e.button !== 0) return;
-    if(this.isMobile) {
+    if (!this.isMobile && e.button !== 0
+      || !this.checkLongPress()
+      || !this.isDragBegin)
+      return;
+    console.log("dragend");
+    if (this.isMobile) {
       document.body.style.overflow = null;
     }
     this.mousePos = this.beginPos = null;
@@ -248,6 +264,7 @@ const DragList = (DragItem, Placeholder) => class extends Component {
     //get the props should be passed to real DOM
     const props = {...this.props};
     [
+      'list',
       'disabled',
       'gutter',
       'isLongPress',

@@ -63,7 +63,7 @@ Properties
 
 | name | type | default | description |
 |------|------|---------|-------------|
-| disabled | Boolean | false | disabled dragging and dropping |
+| disabled | Boolean | false | Disabled dragging and dropping |
 | type | String |       | Type of drag list.The list will be horizontal when it is set ```inline```.|
 | isLongPress | Boolean | false | Should dragging be triggered by long pressing or not |
 | delay | Number | 300(ms) | The delay time of long pressing |
