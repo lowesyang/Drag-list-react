@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {getListContainer, getElement, disabledSelection, isInline, checkMobile, simulateTouchStart} from './utils';
+import {getListContainer, getElement, disabledSelection, isInline, checkMobile} from './utils';
 import {DRAG_CONTAINER, FLOAT_DRAG_ITEM, ITEM_CAN_DRAG} from './constants';
 import styles from './DragList.css';
 
@@ -29,10 +29,6 @@ const DragList = (DragItem, Placeholder) => class extends Component {
     this.currDragItem = null;     //current dragging dom nod
     this.floatEl = null;           //current floating dom node
     this.setTime = null;          //setTimeout handler
-  }
-
-  componentDidUpdate() {
-    console.log('update')
   }
 
   componentDidMount() {
@@ -66,6 +62,10 @@ const DragList = (DragItem, Placeholder) => class extends Component {
     }
   }
 
+  preventScroll(e) {
+    e.preventDefault();
+  }
+
   checkLongPress = () => {
     return !this.props.isLongPress || this.isLongPress;
   }
@@ -76,6 +76,19 @@ const DragList = (DragItem, Placeholder) => class extends Component {
       (e.touches ? e.touches[0].pageX : e.pageX)
       : (e.touches ? e.touches[0].pageY : e.pageY);
     const el = e.target;
+    if (this.isMobile) {
+      this.mobileEl = el;
+      // listen touch event in e.target
+      el.addEventListener('touchmove', this.dragging);
+      el.addEventListener('touchend', this.dragEnd);
+      el.addEventListener('touchcancel', this.dragEnd);
+      // prevent scrolling
+      document.body.addEventListener('touchmove',this.preventScroll);
+      document.body.style.cssText = `
+        height:${window.innerHeight+'px'};
+        overflow:hidden;
+      `;
+    }
     if (this.props.isLongPress) {
       // Long press
       clearTimeout(this.setTime);
@@ -96,13 +109,7 @@ const DragList = (DragItem, Placeholder) => class extends Component {
     this.currDragItem = getElement(el, this._container, ITEM_CAN_DRAG);
     if (!this.currDragItem) return;
 
-    if (this.isMobile) {
-      this.mobileEl = el;
-      el.addEventListener('touchmove', this.dragging);
-      el.addEventListener('touchend', this.dragEnd);
-      el.addEventListener('touchcancel', this.dragEnd);
-      document.body.style.overflow = 'hidden';
-    }
+
     this.isDragBegin = true;
     const list = this.state.list;
     const {el: dragEl, ind} = this.currDragItem;
@@ -146,6 +153,7 @@ const DragList = (DragItem, Placeholder) => class extends Component {
 
   dragging = (e) => {
     // debugger;
+    e.preventDefault();
     e.stopPropagation();
     if (!this.checkLongPress()
       || !this.isDragBegin)
@@ -186,8 +194,7 @@ const DragList = (DragItem, Placeholder) => class extends Component {
   dragEnd = (e) => {
     e.stopPropagation();
     if (!this.isMobile && e.button !== 0
-      || !this.checkLongPress()
-      || !this.isDragBegin)
+      || !this.checkLongPress())
       return;
     console.log("dragend");
     if (this.isMobile) {
@@ -198,7 +205,8 @@ const DragList = (DragItem, Placeholder) => class extends Component {
         el.removeEventListener('touchcancel', this.dragEnd);
       }
       this.mobileEl = null;
-      document.body.style.overflow = null;
+      document.body.style.cssText = '';
+      document.body.removeEventListener('touchmove',this.preventScroll);
     }
     this.mousePos = this.beginPos = null;
     this.isLongPress = false;

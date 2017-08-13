@@ -61,12 +61,3 @@ export function checkMobile() {
   }
   return false;
 }
-
-// trigger touchstart event.Fix the bug in the mobile
-// that float element cannot dragging when drag begins.
-export function simulateTouchStart(el){
-  console.log("simulate")
-  const event=document.createEvent('Events');
-  event.initEvent('touchstart',true,true);
-  el.dispatchEvent(event);
-}

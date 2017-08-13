@@ -5,7 +5,7 @@
 
 A HOC component of Drag&Drop,Touch enabled and Reordering list for React.
 
-[demo](http://htmlpreview.github.io/?https://github.com/yyh1102/Drag-list-react/blob/master/demo/index.html)
+[demo](https://yyh1102.github.io/react-drag-list/)
 
 ## Install
 ```bash
