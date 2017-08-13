@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>touch test</title>
+    <style>
+        div{
+            height:600px;
+            background-color: #919191;
+        }
+    </style>
+</head>
+<body>
+<div id="div"></div>
+</body>
+<script>
+    window.onload=function() {
+      var div=document.getElementById('div');
+      var cache;
+      window.addEventListener('touchstart',function(e){
+
+      })
+      div.addEventListener('touchstart', function (e) {
+        console.log(e)
+        e.target.addEventListener('touchmove',function(){
+          console.log("touchmove")
+        })
+        div.parentNode.removeChild(div);
+      })
+      window.addEventListener("touchmove", function () {
+        console.log(cache)
+        console.log("touchmove")
+      })
+      window.addEventListener("touchend", function () {
+        console.log("touchend")
+      })
+    }
+</script>
+</html>

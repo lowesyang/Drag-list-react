@@ -1,6 +1,6 @@
 {
   "name": "drag-list-react",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A component of dragging and resorting list for React",
   "main": "dist/drag-list-react.js",
   "browser": "dist/drag-list-react.js",
