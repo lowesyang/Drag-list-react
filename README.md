@@ -53,7 +53,7 @@ const App = () => {
   // Or not use placeholder
   // const List = DragList(listItem);
   return (
-    <List  />
+    <List list={list} />
   )
 };
 ```
